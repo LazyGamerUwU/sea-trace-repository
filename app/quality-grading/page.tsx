@@ -66,14 +66,18 @@ export default function QualityGradingPage() {
               </Link>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="outline" size="sm">
-                <History className="h-4 w-4 mr-2" />
-                View History
-              </Button>
-              <Button size="sm">
-                <Camera className="h-4 w-4 mr-2" />
-                New Assessment
-              </Button>
+              <Link href="/quality-grading/history">
+                <Button variant="outline" size="sm">
+                  <History className="h-4 w-4 mr-2" />
+                  View History
+                </Button>
+              </Link>
+              <Link href="/quality-grading/new-assessment">
+                <Button size="sm">
+                  <Camera className="h-4 w-4 mr-2" />
+                  New Assessment
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

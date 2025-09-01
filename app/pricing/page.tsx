@@ -90,14 +90,18 @@ export default function DynamicPricingPage() {
               </Link>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="outline" size="sm">
-                <Activity className="h-4 w-4 mr-2" />
-                Market Alerts
-              </Button>
-              <Button size="sm">
-                <Target className="h-4 w-4 mr-2" />
-                Set Price Target
-              </Button>
+              <Link href="/pricing/market-alerts">
+                <Button variant="outline" size="sm">
+                  <Activity className="h-4 w-4 mr-2" />
+                  Market Alerts
+                </Button>
+              </Link>
+              <Link href="/pricing/set-target">
+                <Button size="sm">
+                  <Target className="h-4 w-4 mr-2" />
+                  Set Price Target
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
