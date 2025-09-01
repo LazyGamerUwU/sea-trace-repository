@@ -1,10 +1,14 @@
-import { History, ArrowLeft, Eye, Calendar, Download } from "lucide-react"
+"use client"
+
+import { useState } from "react"
+import { History, ArrowLeft, Eye, Calendar, Download, CheckCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 
 export default function QualityGradingHistoryPage() {
+  const [showExportSuccess, setShowExportSuccess] = useState(false)
   const gradingHistory = [
     {
       id: 1,
@@ -60,6 +64,16 @@ export default function QualityGradingHistoryPage() {
     },
   ]
 
+  const handleExportReport = () => {
+    setShowExportSuccess(true)
+    setTimeout(() => setShowExportSuccess(false), 3000)
+  }
+
+  const handleViewDetails = (gradingId: number) => {
+    // In a real app, this would navigate to a detailed view
+    alert(`Viewing details for grading ID: ${gradingId}`)
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
@@ -74,13 +88,26 @@ export default function QualityGradingHistoryPage() {
                 <span className="text-xl font-bold text-foreground">Quality Grading History</span>
               </div>
             </div>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={handleExportReport}>
               <Download className="h-4 w-4 mr-2" />
               Export Report
             </Button>
           </div>
         </div>
       </header>
+
+      {showExportSuccess && (
+        <div className="fixed top-4 right-4 z-50">
+          <Card className="border-primary bg-primary/5">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4 text-primary" />
+                <span className="text-sm font-medium text-primary">Report exported successfully!</span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       <div className="container mx-auto px-4 py-8">
         <Card className="border-border">
@@ -145,7 +172,7 @@ export default function QualityGradingHistoryPage() {
                       </Badge>
                     </div>
 
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={() => handleViewDetails(grading.id)}>
                       <Eye className="h-4 w-4 mr-2" />
                       View Details
                     </Button>

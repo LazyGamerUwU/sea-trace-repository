@@ -17,6 +17,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { SharedHeader } from "@/components/shared-header"
 import Link from "next/link"
 
 export default function QualityGradingPage() {
@@ -55,35 +56,32 @@ export default function QualityGradingPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="flex items-center gap-2">
-                <Eye className="h-6 w-6 text-primary" />
-                <span className="text-xl font-bold text-foreground">AI Quality Grading</span>
-              </Link>
-            </div>
-            <div className="flex items-center gap-3">
-              <Link href="/quality-grading/history">
-                <Button variant="outline" size="sm">
-                  <History className="h-4 w-4 mr-2" />
-                  View History
-                </Button>
-              </Link>
-              <Link href="/quality-grading/new-assessment">
-                <Button size="sm">
-                  <Camera className="h-4 w-4 mr-2" />
-                  New Assessment
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <SharedHeader />
 
       <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">AI Quality Grading</h1>
+            <p className="text-muted-foreground">
+              Upload photos of your seaweed for instant AI-powered quality assessment
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link href="/quality-grading/history">
+              <Button variant="outline" size="sm">
+                <History className="h-4 w-4 mr-2" />
+                View History
+              </Button>
+            </Link>
+            <Link href="/quality-grading/new-assessment">
+              <Button size="sm">
+                <Camera className="h-4 w-4 mr-2" />
+                New Assessment
+              </Button>
+            </Link>
+          </div>
+        </div>
+
         <Tabs defaultValue="upload" className="space-y-8">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="upload">Upload & Grade</TabsTrigger>

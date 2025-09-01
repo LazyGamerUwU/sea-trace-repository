@@ -13,6 +13,7 @@ import {
   TrendingUp,
   Users,
   Clock,
+  X,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -26,6 +27,7 @@ export default function MarketplacePage() {
   const [selectedGrade, setSelectedGrade] = useState("all")
   const [selectedLocation, setSelectedLocation] = useState("all")
   const [visibleListings, setVisibleListings] = useState(3)
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
 
   const allListings = [
     {
@@ -151,7 +153,8 @@ export default function MarketplacePage() {
       listing.seaweedType.toLowerCase().includes(searchTerm.toLowerCase())
 
     const matchesGrade =
-      selectedGrade === "all" || listing.quality.toLowerCase().replace(" ", "").replace("+", "+") === selectedGrade
+      selectedGrade === "all" ||
+      listing.quality.toLowerCase().replace(/\s+/g, "").replace("grade", "") === selectedGrade.replace("-", "")
 
     const matchesLocation =
       selectedLocation === "all" || listing.location.toLowerCase().includes(selectedLocation.toLowerCase())
@@ -163,6 +166,13 @@ export default function MarketplacePage() {
 
   const handleLoadMore = () => {
     setVisibleListings((prev) => Math.min(prev + 3, filteredListings.length))
+  }
+
+  const handleResetFilters = () => {
+    setSearchTerm("")
+    setSelectedGrade("all")
+    setSelectedLocation("all")
+    setShowAdvancedFilters(false)
   }
 
   return (
@@ -217,16 +227,71 @@ export default function MarketplacePage() {
                 variant="outline"
                 size="icon"
                 className="bg-background"
-                onClick={() => {
-                  setSearchTerm("")
-                  setSelectedGrade("all")
-                  setSelectedLocation("all")
-                }}
+                onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
               >
                 <Filter className="h-4 w-4" />
               </Button>
             </div>
           </div>
+
+          {/* Advanced Filters */}
+          {showAdvancedFilters && (
+            <Card className="mb-6 border-border">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg">Advanced Filters</CardTitle>
+                  <Button variant="ghost" size="sm" onClick={() => setShowAdvancedFilters(false)}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-foreground mb-2 block">Price Range</label>
+                    <div className="flex gap-2">
+                      <Input placeholder="Min ₱" className="bg-background" />
+                      <Input placeholder="Max ₱" className="bg-background" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-foreground mb-2 block">Quantity</label>
+                    <Select>
+                      <SelectTrigger className="bg-background">
+                        <SelectValue placeholder="Any quantity" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Any quantity</SelectItem>
+                        <SelectItem value="small">Under 1,000 kg</SelectItem>
+                        <SelectItem value="medium">1,000 - 2,000 kg</SelectItem>
+                        <SelectItem value="large">Over 2,000 kg</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-foreground mb-2 block">Freshness</label>
+                    <Select>
+                      <SelectTrigger className="bg-background">
+                        <SelectValue placeholder="Any freshness" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Any freshness</SelectItem>
+                        <SelectItem value="fresh">1-2 days</SelectItem>
+                        <SelectItem value="good">3-5 days</SelectItem>
+                        <SelectItem value="older">Over 5 days</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="flex gap-2 pt-4 border-t border-border">
+                  <Button onClick={handleResetFilters} variant="outline" className="bg-transparent">
+                    Reset All Filters
+                  </Button>
+                  <Button onClick={() => setShowAdvancedFilters(false)}>Apply Filters</Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Market Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
@@ -386,6 +451,9 @@ export default function MarketplacePage() {
         {filteredListings.length === 0 && (
           <div className="text-center mt-12">
             <p className="text-muted-foreground">No listings match your current filters.</p>
+            <Button onClick={handleResetFilters} variant="outline" className="mt-4 bg-transparent">
+              Reset Filters
+            </Button>
           </div>
         )}
       </div>
