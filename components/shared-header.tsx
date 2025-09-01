@@ -1,0 +1,105 @@
+"use client"
+
+import Link from "next/link"
+import { usePathname, useRouter } from "next/navigation"
+import { ArrowLeft, Waves } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+
+const pathMap: Record<string, string> = {
+  "/": "Home",
+  "/dashboard": "Dashboard",
+  "/marketplace": "Marketplace",
+  "/quality-grading": "Quality Grading",
+  "/pricing": "Dynamic Pricing",
+  "/traceability": "Traceability",
+}
+
+export function SharedHeader() {
+  const pathname = usePathname()
+  const router = useRouter()
+
+  const pathSegments = pathname.split("/").filter(Boolean)
+  const showBackButton = pathname !== "/" && pathname !== "/dashboard"
+
+  const handleBack = () => {
+    if (pathname === "/dashboard") {
+      router.push("/")
+    } else {
+      router.push("/dashboard")
+    }
+  }
+
+  return (
+    <header className="border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 sticky top-0 z-50">
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            {showBackButton && (
+              <Button variant="ghost" size="sm" onClick={handleBack} className="text-slate-600 hover:text-slate-900">
+                <ArrowLeft className="h-4 w-4 mr-1" />
+                Back
+              </Button>
+            )}
+
+            <Link href="/" className="flex items-center gap-2">
+              <Waves className="h-6 w-6 text-emerald-600" />
+              <span className="font-bold text-xl text-slate-900">SeaTrace</span>
+            </Link>
+          </div>
+
+          <Breadcrumb className="hidden md:flex">
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href="/">Home</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+
+              {pathSegments.map((segment, index) => {
+                const path = "/" + pathSegments.slice(0, index + 1).join("/")
+                const isLast = index === pathSegments.length - 1
+                const title = pathMap[path] || segment.charAt(0).toUpperCase() + segment.slice(1)
+
+                return (
+                  <div key={path} className="flex items-center">
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      {isLast ? (
+                        <BreadcrumbPage>{title}</BreadcrumbPage>
+                      ) : (
+                        <BreadcrumbLink asChild>
+                          <Link href={path}>{title}</Link>
+                        </BreadcrumbLink>
+                      )}
+                    </BreadcrumbItem>
+                  </div>
+                )
+              })}
+            </BreadcrumbList>
+          </Breadcrumb>
+
+          <div className="flex items-center gap-2">
+            {pathname !== "/marketplace" && (
+              <Button asChild variant="ghost" size="sm">
+                <Link href="/marketplace">Marketplace</Link>
+              </Button>
+            )}
+            {pathname !== "/dashboard" && (
+              <Button asChild variant="outline" size="sm">
+                <Link href="/dashboard">Dashboard</Link>
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+    </header>
+  )
+}
