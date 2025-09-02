@@ -10,7 +10,6 @@ import {
   AlertTriangle,
   CheckCircle,
   Activity,
-  Zap,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -18,6 +17,7 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Link from "next/link"
+import { SharedHeader } from "@/components/shared-header"
 
 export default function DynamicPricingPage() {
   const marketData = {
@@ -79,33 +79,7 @@ export default function DynamicPricingPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="flex items-center gap-2">
-                <Zap className="h-6 w-6 text-primary" />
-                <span className="text-xl font-bold text-foreground">Dynamic Pricing Engine</span>
-              </Link>
-            </div>
-            <div className="flex items-center gap-3">
-              <Link href="/pricing/market-alerts">
-                <Button variant="outline" size="sm">
-                  <Activity className="h-4 w-4 mr-2" />
-                  Market Alerts
-                </Button>
-              </Link>
-              <Link href="/pricing/set-target">
-                <Button size="sm">
-                  <Target className="h-4 w-4 mr-2" />
-                  Set Price Target
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <SharedHeader />
 
       <div className="container mx-auto px-4 py-8">
         {/* Price Overview Cards */}
@@ -152,13 +126,16 @@ export default function DynamicPricingPage() {
           </Card>
 
           <Card className="border-border">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Quality Premium</CardTitle>
-              <BarChart3 className="h-4 w-4 text-chart-2" />
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-chart-2" />
+                Quality Premium
+              </CardTitle>
+              <CardDescription>For Grade A+ quality</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">+{marketData.qualityPremium}%</div>
-              <p className="text-xs text-muted-foreground mt-2">For Grade A+ quality</p>
+              <p className="text-xs text-muted-foreground mt-2">Based on current market conditions</p>
             </CardContent>
           </Card>
         </div>
@@ -415,9 +392,16 @@ export default function DynamicPricingPage() {
                     </p>
                   </div>
                   <div className="flex gap-3">
-                    <Button variant="outline" className="bg-transparent">
-                      Set Price Alert
-                    </Button>
+                    <Link href="/pricing/market-alerts">
+                      <Button variant="outline" className="bg-transparent">
+                        Market Alerts
+                      </Button>
+                    </Link>
+                    <Link href="/pricing/set-target">
+                      <Button variant="outline" className="bg-transparent">
+                        Set Price Target
+                      </Button>
+                    </Link>
                     <Link href="/marketplace">
                       <Button>List at ₱48/kg</Button>
                     </Link>

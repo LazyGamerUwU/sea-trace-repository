@@ -28,6 +28,10 @@ export default function MarketplacePage() {
   const [selectedLocation, setSelectedLocation] = useState("all")
   const [visibleListings, setVisibleListings] = useState(3)
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
+  const [priceMin, setPriceMin] = useState("")
+  const [priceMax, setPriceMax] = useState("")
+  const [selectedQuantity, setSelectedQuantity] = useState("all")
+  const [selectedFreshness, setSelectedFreshness] = useState("all")
 
   const allListings = [
     {
@@ -159,7 +163,33 @@ export default function MarketplacePage() {
     const matchesLocation =
       selectedLocation === "all" || listing.location.toLowerCase().includes(selectedLocation.toLowerCase())
 
-    return matchesSearch && matchesGrade && matchesLocation
+    const price = Number.parseFloat(listing.price.replace("₱", "").replace("/kg", ""))
+    const matchesPriceMin = !priceMin || price >= Number.parseFloat(priceMin)
+    const matchesPriceMax = !priceMax || price <= Number.parseFloat(priceMax)
+
+    const quantity = Number.parseFloat(listing.quantity.replace(" kg", "").replace(",", ""))
+    const matchesQuantity =
+      selectedQuantity === "all" ||
+      (selectedQuantity === "small" && quantity < 1000) ||
+      (selectedQuantity === "medium" && quantity >= 1000 && quantity <= 2000) ||
+      (selectedQuantity === "large" && quantity > 2000)
+
+    const freshnessDay = Number.parseFloat(listing.freshness.replace(" day", "").replace("s", ""))
+    const matchesFreshness =
+      selectedFreshness === "all" ||
+      (selectedFreshness === "fresh" && freshnessDay <= 2) ||
+      (selectedFreshness === "good" && freshnessDay >= 3 && freshnessDay <= 5) ||
+      (selectedFreshness === "older" && freshnessDay > 5)
+
+    return (
+      matchesSearch &&
+      matchesGrade &&
+      matchesLocation &&
+      matchesPriceMin &&
+      matchesPriceMax &&
+      matchesQuantity &&
+      matchesFreshness
+    )
   })
 
   const displayedListings = filteredListings.slice(0, visibleListings)
@@ -172,7 +202,16 @@ export default function MarketplacePage() {
     setSearchTerm("")
     setSelectedGrade("all")
     setSelectedLocation("all")
+    setPriceMin("")
+    setPriceMax("")
+    setSelectedQuantity("all")
+    setSelectedFreshness("all")
     setShowAdvancedFilters(false)
+  }
+
+  const handleApplyFilters = () => {
+    setShowAdvancedFilters(false)
+    setVisibleListings(3)
   }
 
   return (
@@ -187,7 +226,6 @@ export default function MarketplacePage() {
           </p>
         </div>
 
-        {/* Search and Filters */}
         <div className="mb-8">
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <div className="flex-1 relative">
@@ -234,7 +272,6 @@ export default function MarketplacePage() {
             </div>
           </div>
 
-          {/* Advanced Filters */}
           {showAdvancedFilters && (
             <Card className="mb-6 border-border">
               <CardHeader className="pb-3">
@@ -250,13 +287,25 @@ export default function MarketplacePage() {
                   <div>
                     <label className="text-sm font-medium text-foreground mb-2 block">Price Range</label>
                     <div className="flex gap-2">
-                      <Input placeholder="Min ₱" className="bg-background" />
-                      <Input placeholder="Max ₱" className="bg-background" />
+                      <Input
+                        placeholder="Min ₱"
+                        className="bg-background"
+                        value={priceMin}
+                        onChange={(e) => setPriceMin(e.target.value)}
+                        type="number"
+                      />
+                      <Input
+                        placeholder="Max ₱"
+                        className="bg-background"
+                        value={priceMax}
+                        onChange={(e) => setPriceMax(e.target.value)}
+                        type="number"
+                      />
                     </div>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-foreground mb-2 block">Quantity</label>
-                    <Select>
+                    <Select value={selectedQuantity} onValueChange={setSelectedQuantity}>
                       <SelectTrigger className="bg-background">
                         <SelectValue placeholder="Any quantity" />
                       </SelectTrigger>
@@ -270,7 +319,7 @@ export default function MarketplacePage() {
                   </div>
                   <div>
                     <label className="text-sm font-medium text-foreground mb-2 block">Freshness</label>
-                    <Select>
+                    <Select value={selectedFreshness} onValueChange={setSelectedFreshness}>
                       <SelectTrigger className="bg-background">
                         <SelectValue placeholder="Any freshness" />
                       </SelectTrigger>
@@ -287,13 +336,12 @@ export default function MarketplacePage() {
                   <Button onClick={handleResetFilters} variant="outline" className="bg-transparent">
                     Reset All Filters
                   </Button>
-                  <Button onClick={() => setShowAdvancedFilters(false)}>Apply Filters</Button>
+                  <Button onClick={handleApplyFilters}>Apply Filters</Button>
                 </div>
               </CardContent>
             </Card>
           )}
 
-          {/* Market Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <Card className="border-border">
               <CardContent className="p-4">
@@ -334,7 +382,6 @@ export default function MarketplacePage() {
           </div>
         </div>
 
-        {/* Listings Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {displayedListings.map((listing) => (
             <Card key={listing.id} className="border-border hover:shadow-lg transition-shadow">
@@ -439,7 +486,6 @@ export default function MarketplacePage() {
           ))}
         </div>
 
-        {/* Load More */}
         {visibleListings < filteredListings.length && (
           <div className="text-center mt-12">
             <Button variant="outline" size="lg" className="bg-transparent" onClick={handleLoadMore}>

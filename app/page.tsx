@@ -1,9 +1,59 @@
+"use client"
+
+import { useState } from "react"
 import { Waves, Leaf, TrendingUp, Users, Shield, BarChart3 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
 
 export default function HomePage() {
+  const [flippedCard, setFlippedCard] = useState<number | null>(null)
+
+  const features = [
+    {
+      icon: Shield,
+      title: "Disease Detection",
+      description: 'AI-powered monitoring to detect "Ice-Ice" disease early and prevent farm losses',
+      details:
+        "🎯 95% accuracy in early Ice-Ice detection • 🚀 Reduce crop losses by up to 80% • ⚡ Get alerts 2-3 weeks before visible symptoms appear • 💰 Save ₱50,000+ per hectare annually through early intervention • 📱 Simply upload photos for instant analysis",
+    },
+    {
+      icon: TrendingUp,
+      title: "Dynamic Pricing",
+      description: "Real-time market analysis and fair pricing recommendations based on quality and demand",
+      details:
+        "📈 Increase profits by 25-40% with optimal pricing • 🌍 Track global carrageenan prices in real-time • 🎯 AI analyzes 50+ market factors daily • 💡 Get personalized price recommendations every morning • 🏆 Top farmers report ₱15-20 higher per kg using our system",
+    },
+    {
+      icon: BarChart3,
+      title: "Quality Grading",
+      description: "Automated quality assessment using ML image recognition for objective grading",
+      details:
+        "🔬 Eliminate subjective grading forever • ⚡ Get instant quality scores in 30 seconds • 📊 Consistent grading increases buyer trust by 90% • 💎 Grade A+ seaweed commands 40% premium prices • 🎯 99.2% accuracy compared to expert manual grading",
+    },
+    {
+      icon: Users,
+      title: "Market Transparency",
+      description: "Direct connection between farmers and processors, eliminating middleman exploitation",
+      details:
+        "🚫 Cut out middlemen taking 30-50% margins • 🤝 Connect directly with 200+ verified buyers • 💰 Farmers earn 35% more through direct sales • ⭐ Buyer rating system ensures fair treatment • 📱 Negotiate and close deals entirely through the app",
+    },
+    {
+      icon: Waves,
+      title: "Farm Monitoring",
+      description: "Track water quality, growth patterns, and environmental conditions in real-time",
+      details:
+        "🌊 Monitor pH, salinity, temperature 24/7 • 📈 Track growth rates and predict harvest dates • ⚠️ Get alerts for optimal harvesting windows • 🎯 Increase yield by 20-30% with data-driven decisions • 📊 Historical data helps plan future cycles",
+    },
+    {
+      icon: Leaf,
+      title: "Traceability",
+      description: "Complete supply chain tracking from farm to processor for quality assurance",
+      details:
+        "🏷️ Generate unique QR codes for every batch • 🔗 Track complete farm-to-processor journey • 💎 Premium buyers pay 25% more for traced seaweed • 🛡️ Blockchain-secured records prevent fraud • 🌟 Build reputation with verified quality history",
+    },
+  ]
+
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation Header */}
@@ -30,7 +80,7 @@ export default function HomePage() {
               <Link href="/marketplace" className="text-foreground hover:text-primary transition-colors">
                 Marketplace
               </Link>
-              <Link href="/dashboard">
+              <Link href="/auth/signin">
                 <Button variant="outline" size="sm">
                   Sign In
                 </Button>
@@ -65,7 +115,14 @@ export default function HomePage() {
                 Start Free Trial
               </Button>
             </Link>
-            <Button variant="outline" size="lg" className="text-lg px-8 bg-transparent">
+            <Button
+              variant="outline"
+              size="lg"
+              className="text-lg px-8 bg-transparent"
+              onClick={() => {
+                alert("Demo video coming soon! Contact us at demo@seatrace.ph to schedule a live demonstration.")
+              }}
+            >
               Watch Demo
             </Button>
           </div>
@@ -85,77 +142,42 @@ export default function HomePage() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="border-border hover:shadow-xl hover:scale-105 transition-all duration-300">
-              <CardHeader>
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                  <Shield className="h-6 w-6 text-primary" />
-                </div>
-                <CardTitle>Disease Detection</CardTitle>
-                <CardDescription>
-                  AI-powered monitoring to detect "Ice-Ice" disease early and prevent farm losses
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            {features.map((feature, index) => (
+              <div key={index} className="relative h-64 perspective-1000">
+                <div
+                  className={`relative w-full h-full transition-transform duration-700 transform-style-preserve-3d cursor-pointer ${
+                    flippedCard === index ? "rotate-y-180" : ""
+                  }`}
+                  onClick={() => setFlippedCard(flippedCard === index ? null : index)}
+                >
+                  {/* Front of card */}
+                  <Card className="absolute inset-0 border-border hover:shadow-xl hover:scale-105 transition-all duration-300 backface-hidden">
+                    <CardHeader>
+                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                        <feature.icon className="h-6 w-6 text-primary" />
+                      </div>
+                      <CardTitle>{feature.title}</CardTitle>
+                      <CardDescription>{feature.description}</CardDescription>
+                      <div className="mt-4 text-xs text-primary">Click to learn more →</div>
+                    </CardHeader>
+                  </Card>
 
-            <Card className="border-border hover:shadow-xl hover:scale-105 transition-all duration-300">
-              <CardHeader>
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                  <TrendingUp className="h-6 w-6 text-primary" />
+                  {/* Back of card */}
+                  <Card className="absolute inset-0 border-border bg-primary/5 backface-hidden rotate-y-180">
+                    <CardHeader className="h-full flex flex-col justify-between">
+                      <div>
+                        <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mb-4">
+                          <feature.icon className="h-6 w-6 text-primary" />
+                        </div>
+                        <CardTitle className="mb-3">{feature.title}</CardTitle>
+                        <CardDescription className="text-sm leading-relaxed">{feature.details}</CardDescription>
+                      </div>
+                      <div className="mt-4 text-xs text-primary">Click to go back ←</div>
+                    </CardHeader>
+                  </Card>
                 </div>
-                <CardTitle>Dynamic Pricing</CardTitle>
-                <CardDescription>
-                  Real-time market analysis and fair pricing recommendations based on quality and demand
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card className="border-border hover:shadow-xl hover:scale-105 transition-all duration-300">
-              <CardHeader>
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                  <BarChart3 className="h-6 w-6 text-primary" />
-                </div>
-                <CardTitle>Quality Grading</CardTitle>
-                <CardDescription>
-                  Automated quality assessment using ML image recognition for objective grading
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card className="border-border hover:shadow-xl hover:scale-105 transition-all duration-300">
-              <CardHeader>
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                  <Users className="h-6 w-6 text-primary" />
-                </div>
-                <CardTitle>Market Transparency</CardTitle>
-                <CardDescription>
-                  Direct connection between farmers and processors, eliminating middleman exploitation
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card className="border-border hover:shadow-xl hover:scale-105 transition-all duration-300">
-              <CardHeader>
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                  <Waves className="h-6 w-6 text-primary" />
-                </div>
-                <CardTitle>Farm Monitoring</CardTitle>
-                <CardDescription>
-                  Track water quality, growth patterns, and environmental conditions in real-time
-                </CardDescription>
-              </CardHeader>
-            </Card>
-
-            <Card className="border-border hover:shadow-xl hover:scale-105 transition-all duration-300">
-              <CardHeader>
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                  <Leaf className="h-6 w-6 text-primary" />
-                </div>
-                <CardTitle>Traceability</CardTitle>
-                <CardDescription>
-                  Complete supply chain tracking from farm to processor for quality assurance
-                </CardDescription>
-              </CardHeader>
-            </Card>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -167,7 +189,7 @@ export default function HomePage() {
           <p className="text-xl text-muted-foreground mb-12">Choose the plan that fits your farm size and needs</p>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <Card className="border-border hover:shadow-xl hover:scale-105 transition-all duration-300">
+            <Card className="border-border hover:shadow-xl hover:scale-105 hover:border-primary transition-all duration-300">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl">Starter</CardTitle>
                 <div className="text-3xl font-bold text-primary">
@@ -177,7 +199,7 @@ export default function HomePage() {
               </CardHeader>
             </Card>
 
-            <Card className="border-border hover:shadow-xl hover:scale-105 transition-all duration-300 border-primary">
+            <Card className="border-border hover:shadow-xl hover:scale-105 hover:border-primary transition-all duration-300">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl">Professional</CardTitle>
                 <div className="text-3xl font-bold text-primary">
@@ -187,7 +209,7 @@ export default function HomePage() {
               </CardHeader>
             </Card>
 
-            <Card className="border-border hover:shadow-xl hover:scale-105 transition-all duration-300">
+            <Card className="border-border hover:shadow-xl hover:scale-105 hover:border-primary transition-all duration-300">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl">Enterprise</CardTitle>
                 <div className="text-3xl font-bold text-primary">
@@ -216,7 +238,16 @@ export default function HomePage() {
                 Start Your Free Trial
               </Button>
             </Link>
-            <Button variant="outline" size="lg" className="text-lg px-8 bg-transparent">
+            <Button
+              variant="outline"
+              size="lg"
+              className="text-lg px-8 bg-transparent"
+              onClick={() => {
+                alert(
+                  "Schedule a personalized demo! Contact us at:\n\nEmail: demo@seatrace.ph\nPhone: +63 917 123 4567\n\nOr visit our office in Zamboanga City for an in-person demonstration.",
+                )
+              }}
+            >
               Schedule Demo
             </Button>
           </div>

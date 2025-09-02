@@ -1,14 +1,15 @@
 "use client"
 
 import { useState } from "react"
-import { History, ArrowLeft, Eye, Calendar, Download, CheckCircle } from "lucide-react"
+import { Eye, Calendar, Download, CheckCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import Link from "next/link"
+import { SharedHeader } from "@/components/shared-header"
 
 export default function QualityGradingHistoryPage() {
   const [showExportSuccess, setShowExportSuccess] = useState(false)
+
   const gradingHistory = [
     {
       id: 1,
@@ -66,43 +67,61 @@ export default function QualityGradingHistoryPage() {
 
   const handleExportReport = () => {
     setShowExportSuccess(true)
-    setTimeout(() => setShowExportSuccess(false), 3000)
+    // Simulate export process
+    setTimeout(() => {
+      setShowExportSuccess(false)
+      // In a real app, this would trigger actual file download
+      const blob = new Blob(["Quality Grading Report - Generated on " + new Date().toLocaleDateString()], {
+        type: "text/plain",
+      })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `quality-grading-report-${new Date().toISOString().split("T")[0]}.txt`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    }, 1500)
   }
 
-  const handleViewDetails = (gradingId: number) => {
-    // In a real app, this would navigate to a detailed view
-    alert(`Viewing details for grading ID: ${gradingId}`)
+  const handleViewDetails = (grading: any) => {
+    const detailsMessage = `
+Detailed Quality Assessment - Batch ${grading.batchId}
+
+Assessment Date: ${new Date(grading.date).toLocaleDateString()}
+Overall Grade: ${grading.grade} (${grading.score}/100)
+
+Quality Metrics:
+• Color Quality: ${grading.color}
+• Foreign Matter: ${grading.foreignMatter}
+• Moisture Content: ${grading.moisture}
+• Images Analyzed: ${grading.images}
+
+Market Performance:
+• Listed Price: ${grading.listedPrice}
+• Status: ${grading.status}
+
+AI Analysis Notes:
+This batch showed ${grading.grade === "A+" ? "exceptional" : grading.grade === "A" ? "high" : "good"} quality characteristics with ${grading.foreignMatter === "None detected" ? "no contamination" : "minimal contamination"} detected.
+    `
+    alert(detailsMessage)
   }
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/quality-grading" className="flex items-center gap-2">
-                <ArrowLeft className="h-5 w-5 text-muted-foreground" />
-              </Link>
-              <div className="flex items-center gap-2">
-                <History className="h-6 w-6 text-primary" />
-                <span className="text-xl font-bold text-foreground">Quality Grading History</span>
-              </div>
-            </div>
-            <Button variant="outline" size="sm" onClick={handleExportReport}>
-              <Download className="h-4 w-4 mr-2" />
-              Export Report
-            </Button>
-          </div>
-        </div>
-      </header>
+      <SharedHeader />
 
       {showExportSuccess && (
-        <div className="fixed top-4 right-4 z-50">
-          <Card className="border-primary bg-primary/5">
+        <div className="fixed top-20 right-4 z-50 animate-in slide-in-from-right-2">
+          <Card className="border-primary bg-primary/5 shadow-lg">
             <CardContent className="p-4">
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium text-primary">Report exported successfully!</span>
+                <CheckCircle className="h-5 w-5 text-primary" />
+                <div>
+                  <div className="text-sm font-medium text-primary">Report exported successfully!</div>
+                  <div className="text-xs text-muted-foreground">Download will start shortly...</div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -110,13 +129,26 @@ export default function QualityGradingHistoryPage() {
       )}
 
       <div className="container mx-auto px-4 py-8">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-foreground">Quality Grading History</h1>
+          <p className="text-muted-foreground">
+            Track your seaweed quality improvements and pricing performance over time.
+          </p>
+          <div className="mt-4">
+            <Button variant="outline" size="sm" onClick={handleExportReport} disabled={showExportSuccess}>
+              <Download className="h-4 w-4 mr-2" />
+              {showExportSuccess ? "Exporting..." : "Export Report"}
+            </Button>
+          </div>
+        </div>
+
         <Card className="border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-primary" />
               Complete Grading History
             </CardTitle>
-            <CardDescription>Track your seaweed quality improvements and pricing performance over time</CardDescription>
+            <CardDescription>Detailed assessment records with AI-powered quality analysis</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -172,7 +204,7 @@ export default function QualityGradingHistoryPage() {
                       </Badge>
                     </div>
 
-                    <Button variant="outline" size="sm" onClick={() => handleViewDetails(grading.id)}>
+                    <Button variant="outline" size="sm" onClick={() => handleViewDetails(grading)}>
                       <Eye className="h-4 w-4 mr-2" />
                       View Details
                     </Button>
